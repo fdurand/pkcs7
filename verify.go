@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 // Verify is a wrapper around VerifyWithChain() that initializes an empty
@@ -53,6 +55,8 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
 		h := hash.New()
 		h.Write(p7.Content)
 		computed := h.Sum(nil)
+		spew.Dump(digest)
+		spew.Dump(computed)
 		if subtle.ConstantTimeCompare(digest, computed) != 1 {
 			return &MessageDigestMismatchError{
 				ExpectedDigest: digest,
