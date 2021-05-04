@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	si "github.com/fdurand/ietf-cms/protocol"
 )
 
 // Verify is a wrapper around VerifyWithChain() that initializes an empty
@@ -48,11 +49,11 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
 		if err != nil {
 			return err
 		}
-		hash, err := getHashForOID(signer.DigestAlgorithm.Algorithm)
-		if err != nil {
-			return err
-		}
-		h := hash.New()
+		// hash, err := getHashForOID(signer.DigestAlgorithm.Algorithm)
+		// if err != nil {
+		// 	return err
+		// }
+		h, _ := si.Hash()
 		h.Write(p7.Content)
 		computed := h.Sum(nil)
 		spew.Dump(digest)
