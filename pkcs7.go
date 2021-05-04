@@ -23,7 +23,7 @@ type PKCS7 struct {
 	Certificates []*x509.Certificate
 	CRLs         []pkix.CertificateList
 	Signers      []signerInfo
-	raw          interface{}
+	Raw          interface{}
 }
 
 type contentInfo struct {
@@ -188,7 +188,7 @@ func parseEnvelopedData(data []byte) (*PKCS7, error) {
 		return nil, err
 	}
 	return &PKCS7{
-		raw: ed,
+		Raw: ed,
 	}, nil
 }
 
@@ -198,7 +198,7 @@ func parseEncryptedData(data []byte) (*PKCS7, error) {
 		return nil, err
 	}
 	return &PKCS7{
-		raw: ed,
+		Raw: ed,
 	}, nil
 }
 
