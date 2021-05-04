@@ -54,7 +54,7 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
 		}
 		spew.Dump("VLA LE HASH de PKCS7")
 		spew.Dump(hash)
-
+		spew.Dump(p7.Content)
 		h := hash.New()
 		h.Write(p7.Content)
 		computed := h.Sum(nil)
