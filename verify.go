@@ -150,7 +150,9 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 		// assuming this is tag 04
 		content = compound.Bytes
 	}
-	content = sd.ContentInfo.Content.Bytes
+
+	spew.Dump("pkcs7 content")
+	spew.Dump(content)
 	return &PKCS7{
 		Content:      content,
 		Certificates: certs,
