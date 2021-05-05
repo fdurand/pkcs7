@@ -161,10 +161,13 @@ func Parse(data []byte) (p7 *PKCS7, err error) {
 	}
 	var info contentInfo
 	der, err := protocol.BER2DER(data)
+
 	if err != nil {
 		return nil, err
 	}
 	rest, err := asn1.Unmarshal(der, &info)
+	spew.Dump("parsed signed pkcs7")
+	spew.Dump(info)
 	if len(rest) > 0 {
 		err = asn1.SyntaxError{Msg: "trailing data"}
 		return
@@ -172,8 +175,6 @@ func Parse(data []byte) (p7 *PKCS7, err error) {
 	if err != nil {
 		return
 	}
-	spew.Dump("PKCS7 Parse")
-	spew.Dump(info)
 
 	// fmt.Printf("--> Content Type: %s", info.ContentType)
 	switch {

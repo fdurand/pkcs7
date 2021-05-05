@@ -120,6 +120,8 @@ func (p7 *PKCS7) UnmarshalSignedAttribute(attributeType asn1.ObjectIdentifier, o
 func parseSignedData(data []byte) (*PKCS7, error) {
 	var sd signedData
 	asn1.Unmarshal(data, &sd)
+	spew.Dump("SignedDataContent pkcs7")
+	spew.Dump(sd)
 	certs, err := sd.Certificates.Parse()
 	if err != nil {
 		return nil, err
@@ -148,7 +150,7 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 		// assuming this is tag 04
 		content = compound.Bytes
 	}
-	content = compound.Bytes
+
 	return &PKCS7{
 		Content:      content,
 		Certificates: certs,
