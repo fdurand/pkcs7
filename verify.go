@@ -137,6 +137,8 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 			return nil, err
 		}
 	}
+	spew.Dump("pkcs7 compound")
+	spew.Dump(compound)
 	// Compound octet string
 	if compound.IsCompound {
 		if compound.Tag == 4 {
