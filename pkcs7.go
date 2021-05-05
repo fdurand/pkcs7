@@ -16,6 +16,7 @@ import (
 
 	_ "crypto/sha1" // for crypto.SHA1
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/github/ietf-cms/protocol"
 )
 
@@ -171,6 +172,8 @@ func Parse(data []byte) (p7 *PKCS7, err error) {
 	if err != nil {
 		return
 	}
+	spew.Dump("PKCS7 Parse")
+	spew.Dump(info)
 
 	// fmt.Printf("--> Content Type: %s", info.ContentType)
 	switch {
