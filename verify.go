@@ -132,7 +132,7 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 
 	// The Content.Bytes maybe empty on PKI responses.
 
-	if rest, err := asn1.Unmarshal(compound.Bytes, &compound); err != nil {
+	if rest, err := asn1.Unmarshal(sd.ContentInfo.Content.Bytes, &compound); err != nil {
 		return nil, err
 	} else if len(rest) > 0 {
 		return nil, errors.New("unexpected trailing data")
