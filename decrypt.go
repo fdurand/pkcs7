@@ -22,7 +22,7 @@ var ErrNotEncryptedContent = errors.New("pkcs7: content data is a decryptable da
 
 // Decrypt decrypts encrypted content info for recipient cert and private key
 func (p7 *PKCS7) Decrypt(cert *x509.Certificate, pkey crypto.PrivateKey) ([]byte, error) {
-	data, ok := p7.Raw.(envelopedData)
+	data, ok := p7.raw.(envelopedData)
 	if !ok {
 		return nil, ErrNotEncryptedContent
 	}
@@ -45,7 +45,7 @@ func (p7 *PKCS7) Decrypt(cert *x509.Certificate, pkey crypto.PrivateKey) ([]byte
 // DecryptUsingPSK decrypts encrypted data using caller provided
 // pre-shared secret
 func (p7 *PKCS7) DecryptUsingPSK(key []byte) ([]byte, error) {
-	data, ok := p7.Raw.(encryptedData)
+	data, ok := p7.raw.(encryptedData)
 	if !ok {
 		return nil, ErrNotEncryptedContent
 	}

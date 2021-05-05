@@ -15,8 +15,6 @@ import (
 	"sort"
 
 	_ "crypto/sha1" // for crypto.SHA1
-
-	"github.com/github/ietf-cms/protocol"
 )
 
 // PKCS7 Represents a PKCS7 structure
@@ -25,7 +23,7 @@ type PKCS7 struct {
 	Certificates []*x509.Certificate
 	CRLs         []pkix.CertificateList
 	Signers      []signerInfo
-	Raw          interface{}
+	raw          interface{}
 }
 
 type contentInfo struct {
@@ -159,7 +157,7 @@ func Parse(data []byte) (p7 *PKCS7, err error) {
 		return nil, errors.New("pkcs7: input data is empty")
 	}
 	var info contentInfo
-	der, err := protocol.BER2DER(data)
+	der, err := ber2der(data)
 
 	if err != nil {
 		return nil, err
@@ -191,7 +189,7 @@ func parseEnvelopedData(data []byte) (*PKCS7, error) {
 		return nil, err
 	}
 	return &PKCS7{
-		Raw: ed,
+		raw: ed,
 	}, nil
 }
 
@@ -201,7 +199,7 @@ func parseEncryptedData(data []byte) (*PKCS7, error) {
 		return nil, err
 	}
 	return &PKCS7{
-		Raw: ed,
+		raw: ed,
 	}, nil
 }
 

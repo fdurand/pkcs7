@@ -8,8 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 // Verify is a wrapper around VerifyWithChain() that initializes an empty
@@ -52,14 +50,10 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
 		if err != nil {
 			return err
 		}
-		spew.Dump("VLA LE HASH de PKCS7")
-		spew.Dump(hash)
-		spew.Dump(p7.Content)
 		h := hash.New()
 		h.Write(p7.Content)
 		computed := h.Sum(nil)
-		spew.Dump(digest)
-		spew.Dump(computed)
+
 		if subtle.ConstantTimeCompare(digest, computed) != 1 {
 			return &MessageDigestMismatchError{
 				ExpectedDigest: digest,
@@ -106,7 +100,7 @@ func (p7 *PKCS7) GetOnlySigner() *x509.Certificate {
 
 // UnmarshalSignedAttribute decodes a single attribute from the signer info
 func (p7 *PKCS7) UnmarshalSignedAttribute(attributeType asn1.ObjectIdentifier, out interface{}) error {
-	sd, ok := p7.Raw.(signedData)
+	sd, ok := p7.raw.(signedData)
 	if !ok {
 		return errors.New("pkcs7: payload is not signedData content")
 	}
@@ -120,8 +114,7 @@ func (p7 *PKCS7) UnmarshalSignedAttribute(attributeType asn1.ObjectIdentifier, o
 func parseSignedData(data []byte) (*PKCS7, error) {
 	var sd signedData
 	asn1.Unmarshal(data, &sd)
-	spew.Dump("SignedDataContent pkcs7")
-	spew.Dump(sd)
+
 	certs, err := sd.Certificates.Parse()
 	if err != nil {
 		return nil, err
@@ -147,9 +140,6 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 			return nil, err
 		}
 	}
-	spew.Dump("pkcs7 compound")
-	spew.Dump(compound)
-	// Compound octet string
 
 	var value []byte
 
@@ -174,7 +164,7 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 		Certificates: certs,
 		CRLs:         sd.CRLs,
 		Signers:      sd.SignerInfos,
-		Raw:          sd}, nil
+		raw:          sd}, nil
 }
 
 // verifyCertChain takes an end-entity certs, a list of potential intermediates and a
