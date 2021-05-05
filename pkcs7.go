@@ -16,7 +16,6 @@ import (
 
 	_ "crypto/sha1" // for crypto.SHA1
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/github/ietf-cms/protocol"
 )
 
@@ -166,8 +165,6 @@ func Parse(data []byte) (p7 *PKCS7, err error) {
 		return nil, err
 	}
 	rest, err := asn1.Unmarshal(der, &info)
-	spew.Dump("parsed signed pkcs7")
-	spew.Dump(info)
 	if len(rest) > 0 {
 		err = asn1.SyntaxError{Msg: "trailing data"}
 		return

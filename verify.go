@@ -129,9 +129,19 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 	// fmt.Printf("--> Signed Data Version %d\n", sd.Version)
 
 	var compound asn1.RawValue
-	var content unsignedData
 
 	// The Content.Bytes maybe empty on PKI responses.
+
+	if rest, err := asn1.Unmarshal(compound.Bytes, &compound); err != nil {
+		return nil, err
+	} else if len(rest) > 0 {
+		return nil, errors.New("unexpected trailing data")
+	}
+
+	if compound.Class != asn1.ClassUniversal || compound.Tag != asn1.TagOctetString {
+		return nil, errors.New("bad tag or class")
+	}
+
 	if len(sd.ContentInfo.Content.Bytes) > 0 {
 		if _, err := asn1.Unmarshal(sd.ContentInfo.Content.Bytes, &compound); err != nil {
 			return nil, err
@@ -140,23 +150,27 @@ func parseSignedData(data []byte) (*PKCS7, error) {
 	spew.Dump("pkcs7 compound")
 	spew.Dump(compound)
 	// Compound octet string
+
+	var value []byte
+
 	if compound.IsCompound {
-		if compound.Tag == 4 {
-			if _, err = asn1.Unmarshal(compound.Bytes, &content); err != nil {
+		rest := compound.Bytes
+		for len(rest) > 0 {
+			if rest, err = asn1.Unmarshal(rest, &compound); err != nil {
 				return nil, err
 			}
-		} else {
-			content = compound.Bytes
+			// Don't allow further constructed types.
+			if compound.Class != asn1.ClassUniversal || compound.Tag != asn1.TagOctetString || compound.IsCompound {
+				return nil, errors.New("bad class or tag")
+			}
+			value = append(value, compound.Bytes...)
 		}
 	} else {
-		// assuming this is tag 04
-		content = compound.Bytes
+		value = compound.Bytes
 	}
 
-	spew.Dump("pkcs7 content")
-	spew.Dump(content)
 	return &PKCS7{
-		Content:      content,
+		Content:      value,
 		Certificates: certs,
 		CRLs:         sd.CRLs,
 		Signers:      sd.SignerInfos,
